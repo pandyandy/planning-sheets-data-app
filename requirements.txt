@@ -1,0 +1,5 @@
+streamlit-option-menu
+streamlit
+pandas
+keboola.component
+kbcstorage
