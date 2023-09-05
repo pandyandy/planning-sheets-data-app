@@ -80,12 +80,13 @@ if choose == "Data-editor":
 
         
 
-
-        data = get_dataframe(selected_value)
-
-
+        # Filter the dataset based on the selected value
+        if selected_value == 'empty':
+            st.markdown('Select table')
+        else:
+            data = get_dataframe(selected_value)
         # Display the data in an editable table using st.data_editor
-        edited_data = st.data_editor(data, num_rows="dynamic", width=1400, height=500)
+            edited_data = st.data_editor(data, num_rows="dynamic", width=1400, height=500)
 
 
 
