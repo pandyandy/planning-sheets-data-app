@@ -1,9 +1,8 @@
+from kbcstorage.client import Client
 import streamlit as st
 import pandas as pd
 import csv
 import os
-from kbcstorage.client import Client
-from keboola.component import CommonInterface
 from streamlit_option_menu import option_menu
 
 
@@ -12,8 +11,8 @@ from streamlit_option_menu import option_menu
 ci = CommonInterface()
 
 
-token = ci.configuration.parameters['kbc_token']
-bucket_id = ci.configuration.parameters['bucket_id']
+token = st.secrets["kbc_bucket_token"]
+bucket_id = st.secrets["custom_bucket_id"]
 
 
 st.set_page_config(
@@ -37,10 +36,16 @@ def get_dataframe(table_name):
     with open('./' + table_detail['name'], mode='rt', encoding='utf-8') as in_file:
         lazy_lines = (line.replace('\0', '') for line in in_file)
         reader = csv.reader(lazy_lines, lineterminator='\n')
-    os.remove('data.csv')
+    if os.path.exists('data.csv'):
+        os.remove('data.csv')
+    else:
+        print("The file does not exist")
     os.rename(table_detail['name'], 'data.csv')
     df = pd.read_csv('data.csv')
     return df
+  
+  
+
 
 
 
@@ -90,10 +95,10 @@ if choose == "Data-editor":
 
 
         if st.button("Send to Keboola"):
-            os.remove('./updated_data.csv.gz')
+            os.remove('updated_data.csv.gz')
             st.markdown(selected_value)
-            edited_data.to_csv('./updated_data.csv.gz', index=False,compression='gzip')
+            edited_data.to_csv('updated_data.csv.gz', index=False,compression='gzip')
             
-            client_upload.tables.load(table_id = selected_value , file_path='./updated_data.csv.gz', is_incremental=False)
+            client_upload.tables.load(table_id = selected_value , file_path='updated_data.csv.gz', is_incremental=False)
     if __name__ == '__main__':
         main()
