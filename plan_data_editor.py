@@ -6,11 +6,6 @@ import os
 from streamlit_option_menu import option_menu
 
 
-
-
-ci = CommonInterface()
-
-
 token = st.secrets["kbc_bucket_token"]
 bucket_id = st.secrets["custom_bucket_id"]
 
