@@ -96,6 +96,7 @@ if choose == "Data-editor":
             else:
                 print("The file does not exist")
             st.markdown(selected_value)
+            st.markdown('Updated!')
             edited_data.to_csv('updated_data.csv.gz', index=False,compression='gzip')
             
             client_upload.tables.load(table_id = selected_value , file_path='updated_data.csv.gz', is_incremental=False)
