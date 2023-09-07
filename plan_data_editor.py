@@ -75,7 +75,7 @@ if choose == "Data-editor":
         options = ['empty'] + list(unique_values)
         # Create a select box with the unique values
         selected_value = st.selectbox('Select a value', options=options)
-        st.markdown(selected_value)
+        # st.markdown(selected_value)
 
 
         
