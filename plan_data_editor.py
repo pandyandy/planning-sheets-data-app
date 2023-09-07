@@ -91,7 +91,10 @@ if choose == "Data-editor":
 
 
         if st.button("Send to Keboola"):
-            os.remove('updated_data.csv.gz')
+            if os.path.exists('updated_data.csv'):
+                os.remove('updated_data.csv.gz')
+            else:
+                print("The file does not exist")
             st.markdown(selected_value)
             edited_data.to_csv('updated_data.csv.gz', index=False,compression='gzip')
             
