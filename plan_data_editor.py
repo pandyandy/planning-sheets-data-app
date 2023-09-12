@@ -49,8 +49,8 @@ with st.sidebar:
                          icons=['people', 'activity', 'person lines fill', 'activity'],
                          menu_icon="app-indicator", default_index=0,
                          styles={
-        "container": {"padding": "5!important", "background-color": "#000000"},
-        "icon": {"color": "#ffc52f", "font-size": "25px"}, 
+        "container": {"padding": "5!important", "background-color": "#FFFFFF"},
+        "icon": {"color": "#000000", "font-size": "25px"}, 
         "nav-link": {"font-size": "20px", "text-align": "left", "margin":"0px", "--hover-color": "grey"},
         "nav-link-selected": {"background-color": "#0082fa"},
     }
