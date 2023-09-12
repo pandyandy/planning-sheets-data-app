@@ -7,7 +7,7 @@ from streamlit_option_menu import option_menu
 
 
 token = st.secrets["kbc_bucket_token"]
-bucket_id = st.secrets["custom_bucket_id"]
+# bucket_id = 'in.c-faker_data'
 
 
 st.set_page_config(
@@ -20,7 +20,7 @@ st.set_page_config(
 client_upload = Client('https://connection.north-europe.azure.keboola.com', token)
 
 
-
+@st.cache_data(ttl=7200)
 def get_dataframe(table_name):
     client = Client('https://connection.north-europe.azure.keboola.com', token)
 
@@ -59,11 +59,12 @@ with st.sidebar:
 
 if choose == "Data-editor":
     def main():
-        
+    
         st.title("APP: Data-editor")
         client = Client('https://connection.north-europe.azure.keboola.com', token)
-        tables = client.buckets.list_tables(bucket_id = bucket_id)
+        tables = client.tables.list() #client.buckets.list_tables(bucket_id = bucket_id)
         table_list = pd.DataFrame(tables)
+        st.markdown('Table list')
         st.dataframe(table_list['id'])
         
         
@@ -74,20 +75,21 @@ if choose == "Data-editor":
         # Add 'All' option to the unique values list
         options = ['empty'] + list(unique_values)
         # Create a select box with the unique values
+        
         selected_value = st.selectbox('Select a value', options=options)
-        # st.markdown(selected_value)
+        
+        
 
 
         
 
         # Filter the dataset based on the selected value
         if selected_value == 'empty':
-            st.markdown('Select table')
+            st.markdown('No table selected')
         else:
             data = get_dataframe(selected_value)
         # Display the data in an editable table using st.data_editor
             edited_data = st.data_editor(data, num_rows="dynamic", width=1400, height=500)
-
 
 
         if st.button("Send to Keboola"):
