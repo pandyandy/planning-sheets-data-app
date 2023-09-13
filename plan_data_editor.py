@@ -62,7 +62,7 @@ def main():
     client = Client(url, token)
     tables = client.tables.list()
     table_list = pd.DataFrame(tables)
-    st.markdown('Table list')
+    st.markdown('Table List Accesible By Provided Storage Token')
     st.dataframe(table_list['id'])
 
     # Get the unique values from a specific column. Replace 'column_name' with your actual column name.
@@ -71,7 +71,7 @@ def main():
     options = ['empty'] + list(unique_values)
     # Create a select box with the unique values
     
-    selected_value = st.selectbox('Select a value', options=options)
+    selected_value = st.selectbox('Select a table for editing', options=options)
     
     # Filter the dataset based on the selected value
     if selected_value == 'empty':
