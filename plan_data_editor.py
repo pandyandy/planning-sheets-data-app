@@ -62,7 +62,7 @@ def main():
     client = Client(url, token)
     tables = client.tables.list()
     table_list = pd.DataFrame(tables)
-    st.markdown('Table List Accesible By Provided Storage Token')
+    st.markdown('Table List Accessible By Provided Storage Token')
     st.dataframe(table_list['id'])
 
     # Get the unique values from a specific column. Replace 'column_name' with your actual column name.
