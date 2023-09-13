@@ -4,11 +4,24 @@ import pandas as pd
 import csv
 import os
 from streamlit_option_menu import option_menu
+import base64
 
+logo_image = os.path.abspath("./app/static/keboola.png")
 
-token = st.secrets["kbc_bucket_token"]
-# bucket_id = 'in.c-faker_data'
+logo_html = f"""<div style="display: flex; justify-content: flex-end;"><img src="data:image/png;base64,{base64.b64encode(open(logo_image, "rb").read()).decode()}" style="width: 100px; margin-left: -10px;"></div>"""
+html_footer = f"""
+ <div style="display: flex; justify-content: flex-end;margin-top: 12%">
+        <div>
+            <p><strong>Version:</strong> 1.1</p>
+        </div>
+        <div style="margin-left: auto;">
+            <img src="data:image/png;base64,{base64.b64encode(open(logo_image, "rb").read()).decode()}" style="width: 100px;">
+        </div>
+    </div>
+"""
 
+token = st.secrets["kbc_storage_token"]
+url = st.secrets["kbc_url"]
 
 st.set_page_config(
     
@@ -16,13 +29,12 @@ st.set_page_config(
     
 )
 
-
-client_upload = Client('https://connection.north-europe.azure.keboola.com', token)
+client_upload = Client(url, token)
 
 
 @st.cache_data(ttl=7200)
 def get_dataframe(table_name):
-    client = Client('https://connection.north-europe.azure.keboola.com', token)
+    client = Client(url, token)
 
     table_detail = client.tables.detail(table_name)
 
@@ -39,11 +51,6 @@ def get_dataframe(table_name):
     df = pd.read_csv('data.csv')
     return df
   
-  
-
-
-
-
 with st.sidebar:
     choose = option_menu("Data manipulation", ["Data-editor"],
                          icons=['people', 'activity', 'person lines fill', 'activity'],
@@ -59,16 +66,17 @@ with st.sidebar:
 
 if choose == "Data-editor":
     def main():
-    
-        st.title("APP: Data-editor")
-        client = Client('https://connection.north-europe.azure.keboola.com', token)
-        tables = client.tables.list() #client.buckets.list_tables(bucket_id = bucket_id)
+        
+        # Set up Streamlit container with title and logo
+        with st.container():
+            st.markdown(f"{logo_html}", unsafe_allow_html=True)
+            st.title("Interactive Keboola Sheets")
+        
+        client = Client(url, token)
+        tables = client.tables.list()
         table_list = pd.DataFrame(tables)
         st.markdown('Table list')
         st.dataframe(table_list['id'])
-        
-        
-
 
         # Get the unique values from a specific column. Replace 'column_name' with your actual column name.
         unique_values = table_list['id'].unique()
@@ -78,11 +86,6 @@ if choose == "Data-editor":
         
         selected_value = st.selectbox('Select a value', options=options)
         
-        
-
-
-        
-
         # Filter the dataset based on the selected value
         if selected_value == 'empty':
             st.markdown('No table selected')
@@ -102,5 +105,9 @@ if choose == "Data-editor":
             edited_data.to_csv('updated_data.csv.gz', index=False,compression='gzip')
             
             client_upload.tables.load(table_id = selected_value , file_path='updated_data.csv.gz', is_incremental=False)
+        
+        # Display HTML footer
+        st.markdown(html_footer, unsafe_allow_html=True)
+
     if __name__ == '__main__':
         main()
