@@ -4,4 +4,4 @@ pandas
 keboola.component
 kbcstorage
 streamlit_authenticator
-kbcstoragestramlit_authenticator
+kbcstoragestreamlit_authenticator
