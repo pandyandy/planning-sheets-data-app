@@ -23,11 +23,9 @@ html_footer = f"""
 token = st.secrets["kbc_storage_token"]
 url = st.secrets["kbc_url"]
 
-st.set_page_config(
-    
-    layout="wide",
-    
-)
+#st.set_page_config(   
+#    layout="wide",    
+#)
 
 client_upload = Client(url, token)
 
