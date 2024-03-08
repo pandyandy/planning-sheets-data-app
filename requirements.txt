@@ -3,3 +3,6 @@ streamlit-option-menu
 pandas
 keboola.component
 kbcstorage
+st_on_hover_tabs
+streamlit_card
+streamlit_server_state
