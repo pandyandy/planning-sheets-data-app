@@ -11,8 +11,8 @@ from streamlit_server_state import server_state, server_state_lock
 TOKEN = st.secrets["kbc_storage_token"]
 URL = st.secrets["kbc_url"]
 
-LOGO_IMAGE_PATH = os.path.abspath("./keboola.png")
-STYLE_CSS_PATH = os.path.abspath("./style.css")
+LOGO_IMAGE_PATH = os.path.abspath("./app/keboola.png")
+STYLE_CSS_PATH = os.path.abspath("./app/style.css")
 
 # Initialize Client
 client = Client(URL, TOKEN)
