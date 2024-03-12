@@ -36,7 +36,7 @@ def get_dataframe(table_name):
 
 # Set Streamlit page config and custom CSS
 def setup_streamlit():
-    #st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide")
     with open(STYLE_CSS_PATH) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
 
