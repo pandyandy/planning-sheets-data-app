@@ -12,7 +12,7 @@ import datetime
 
 
 # Constants
-token = st.secrets["kbc_token"]
+token = st.secrets["kbc_storage_token"]
 url = st.secrets["kbc_url"]
 LOGO_IMAGE_PATH = os.path.abspath("./app/static/keboola.png")
 
