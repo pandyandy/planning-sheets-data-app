@@ -3,3 +3,4 @@ streamlit-option-menu
 kbcstorage
 streamlit_card
 schedule
+streamlit-on-Hover-tabs
