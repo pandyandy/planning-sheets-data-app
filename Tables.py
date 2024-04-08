@@ -59,11 +59,8 @@ def display_footer():
 
 # Initialization
 def init():
-    if 'selected-table-data' not in st.session_state:
+    if 'selected-table' not in st.session_state:
         st.session_state['selected-table'] = ""
-
-    if 'selected-table-tab' not in st.session_state:
-        st.session_state['selected-table-tab'] = ""
 
     if 'data' not in st.session_state:
         st.session_state['data'] = None
@@ -129,9 +126,9 @@ def get_dataframe(table_name):
     df = pd.read_csv('data.csv')
     return df
 
-def write_to_log(data):
+def write_to_log(data, table):
     log_df = pd.DataFrame({
-            'table_id': st.session_state("selected-table"),
+            'table_id': table,
             'new': [data],
             'log_time': datetime.time,
             'user': "PlaceHolderUserID"
@@ -200,41 +197,32 @@ def display_table_card(row):
         },
         image="https://upload.wikimedia.org/wikipedia/en/4/48/Blank.JPG" ,
         key=row['table_id'],
-        on_click=lambda table_id=row['table_id']: st.session_state.update({"selected-table-tab": table_id, "go-to-data": True})
+        on_click=lambda table_id=row['table_id']: st.session_state.update({"selected-table": table_id, "go-to-data": True})
     )
-
-def clear_alert(alert):
-     alert.empty()
-     
-
+    
 def main():
     init()
     display_logo()
     #st.title("data")
     st.session_state["tables_id"] = tables_df = fetch_all_ids()
-    st.session_state["selected-table-data"] = tables_df.loc[0, 'table_id']
-    option = ""
+    st.session_state["selected-table"] = tables_df.loc[0, 'table_id']
+    st.session_state["data"] = get_dataframe(st.session_state["selected-table"])
 
     if len(tables_df) != 0:
         st.title("Tables from Keboola")
-        st.write('Please double-click to access information about the selected table.')
+        st.write('Select and click on a specific table you want to edit.')
         w7, w8, w9 = st.columns([8, 2, 2])
-        alert = ''
         if w9.button("Reload Tables List", key="reload-tables"):
-                    st.session_state["tables_id"] = tables_df = fetch_all_ids()
-                    alert = st.success("Tables List Reloaded!")
-                    schedule.enter(delay = 3, action = clear_alert(alert))
+            st.session_state["tables_id"] = tables_df = fetch_all_ids()
+            st.toast('Tables List Reloaded!', icon = "✅")
         w1 = st.columns([1])            
         create_cards_in_rows(st.session_state["tables_id"])
         if st.session_state["go-to-data"] == True:
             st.switch_page("pages/Data_Editor.py")
-        # print("Session from tabs:", st.session_state["selected-table-tab"])
     else:
         st.error('Data is not loaded yet.')
         
     display_footer()
-
-   
       
 if __name__ == '__main__':
     main()
