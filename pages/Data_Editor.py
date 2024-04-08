@@ -4,7 +4,7 @@ import schedule
 import time
 import pandas as pd
 
-from Tables import get_dataframe, write_to_keboola, write_to_log, fetch_all_ids, display_footer, display_logo, init
+from Tables import cast_bool_columns, get_dataframe, write_to_keboola, write_to_log, fetch_all_ids, display_footer, display_logo, init
 
 init()
 display_logo()
@@ -65,11 +65,14 @@ edited_data = st.data_editor(st.session_state["data"], num_rows="dynamic", heigh
 
 if st.button("Save Data", key="save-data-tables"):
     with st.spinner('Saving Data...'):
+        kbc_data = cast_bool_columns(get_dataframe(st.session_state["selected-table"]))
+        edited_data = cast_bool_columns(edited_data)
         st.session_state["data"] = edited_data
-        kbc_data = get_dataframe(st.session_state["selected-table"])
         concatenated_df = pd.concat([kbc_data, edited_data])
         sym_diff_df = concatenated_df.drop_duplicates(keep=False)
-        write_to_log(sym_diff_df, st.session_state["selected-table"])
-        write_to_keboola(edited_data, st.session_state["selected-table"],f'updated_data.csv.gz')
+        write_to_log(sym_diff_df, st.session_state["selected-table"], True)
+        write_to_keboola(edited_data, st.session_state["selected-table"],f'updated_data.csv.gz', False)
     st.success('Data Updated!', icon = "🎉")
+st.markdown("After clicking the 'Save Data' button, the data will be sent to Keboola Storage using a full load.")
+
 display_footer()

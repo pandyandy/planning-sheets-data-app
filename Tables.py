@@ -71,7 +71,15 @@ def init():
     if 'tables_id' not in st.session_state:
         st.session_state['tables_id'] = pd.DataFrame(columns=['table_id'])
 
-def write_to_keboola(data, table_name, table_path):
+def cast_bool_columns(df):
+    """Ensure that columns that should be boolean are explicitly cast to boolean."""
+    for col in df.columns:
+        # If a column in the DataFrame has only True/False or NaN values, cast it to bool
+        if df[col].dropna().isin([True, False]).all():
+            df[col] = df[col].astype(bool)
+    return df
+
+def write_to_keboola(data, table_name, table_path, incremental):
     """
     Writes the provided data to the specified table in Keboola Connection,
     updating existing records as needed.
@@ -92,7 +100,7 @@ def write_to_keboola(data, table_name, table_path):
     client.tables.load(
         table_id=table_name,
         file_path=table_path,
-        is_incremental=False
+        is_incremental=incremental
     )
 
 def get_dataframe(table_name):
@@ -126,14 +134,15 @@ def get_dataframe(table_name):
     df = pd.read_csv('data.csv')
     return df
 
-def write_to_log(data, table):
+def write_to_log(data, table, incremental):
+    now = datetime.datetime.now()
     log_df = pd.DataFrame({
             'table_id': table,
             'new': [data],
-            'log_time': datetime.time,
+            'log_time': now,
             'user': "PlaceHolderUserID"
         })
-    write_to_keboola(log_df, f'in.c-keboolasheets.log',f'updated_data_log.csv.gz')
+    write_to_keboola(log_df, f'in.c-keboolasheets.log',f'updated_data_log.csv.gz', incremental)
 
 # Fetch and prepare table IDs and short description
 @st.cache_data(ttl=7200)
