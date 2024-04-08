@@ -1,6 +1,5 @@
 streamlit
 streamlit-option-menu
 kbcstorage
-st_on_hover_tabs
 streamlit_card
 schedule
