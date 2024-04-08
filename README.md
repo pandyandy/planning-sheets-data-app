@@ -4,3 +4,5 @@ Simplify your data editing and management within your company using the "Interac
 | Version |    Date    |       Description       |
 |---------|:----------:|:-----------------------:|
 | 1.1     | 2023-09-13 |  An data app for editing data in Keboola storage.
+| 2.0     | 2024-04-08 |  An data app for editing data in Keboola storage.
+

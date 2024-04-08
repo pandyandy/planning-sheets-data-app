@@ -1,5 +1,6 @@
 streamlit
 streamlit-option-menu
-pandas
-keboola.component
 kbcstorage
+st_on_hover_tabs
+streamlit_card
+schedule
