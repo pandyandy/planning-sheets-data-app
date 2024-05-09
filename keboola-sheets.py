@@ -185,7 +185,7 @@ def cast_bool_columns(df):
 #LOGO
 row = st.columns(6)  # Create a list of 5 columns with equal width
 tile = row[0].container(border=True)  # Use only the first column
-tile.image("keboola.png")  # Place an image in the first column
+tile.image(LOGO_IMAGE_PATH)  # Place an image in the first column
 
 
 # Display tables
