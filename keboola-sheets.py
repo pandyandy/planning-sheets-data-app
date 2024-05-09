@@ -132,7 +132,7 @@ def display_table_section(row):
 
 
 def display_footer_section():
-    left_aligned, space_col, right_aligned = st.columns((20,70,10))
+    left_aligned, space_col, right_aligned = st.columns((2,7,1))
     with left_aligned:
         st.caption("© Keboola 2024")
     with right_aligned:
@@ -206,7 +206,7 @@ if st.session_state['selected-table']is None:
     st.subheader("Tables")
 
     # Search bar and sorting options
-    search_col, sort_col, but_col = st.columns((60,15,25))
+    search_col, sort_col, but_col = st.columns((6,3,2))
     with search_col:
         search_query = st.text_input("", placeholder="Search",label_visibility="collapsed")
 
