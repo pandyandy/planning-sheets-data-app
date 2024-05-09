@@ -240,7 +240,7 @@ if st.session_state['selected-table']is None:
 else:
     col1,col2,col3,col4 = st.columns(4)
     with col4:
-        st.button("< Back to Tables Overview", on_click=resetSetting, type="secondary")
+        st.button(":gray[Back to Tables]", on_click=resetSetting, type="secondary")
     # Data Editor
     st.title("Data Editor")
     # Info
