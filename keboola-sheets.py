@@ -238,7 +238,7 @@ if st.session_state['selected-table']is None:
         display_table_section(row)
         # row['displayName'], row['table_id'],row['lastImportDate'],row['created']
 else:
-    col1,col2,col3,col4 = st.columns(2,2,2,1)
+    col1,col2,col3,col4 = st.columns(4)
     with col4:
         st.button("< Back to Tables Overview", on_click=resetSetting, type="secondary")
     # Data Editor
