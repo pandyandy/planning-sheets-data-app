@@ -206,7 +206,7 @@ if st.session_state['selected-table']is None:
     st.subheader("Tables")
 
     # Search bar and sorting options
-    search_col, sort_col, but_col = st.columns((6,3,2))
+    search_col, sort_col, but_col = st.columns((6,4,1))
     with search_col:
         search_query = st.text_input("", placeholder="Search",label_visibility="collapsed")
 
