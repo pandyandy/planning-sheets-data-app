@@ -7,6 +7,9 @@ import csv
 import pandas as pd
 import datetime
 
+# Setting page config
+st.set_page_config(page_title="Keboola Sheets App", page_icon=":robot:", layout="wide")
+
 # Constants
 token = st.secrets["kbc_storage_token"]
 url = st.secrets["kbc_url"]
