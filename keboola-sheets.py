@@ -186,7 +186,7 @@ def cast_bool_columns(df):
             df[col] = df[col].astype(bool)
     return df
 #LOGO
-row = st.columns(10)  # Create a list of 5 columns with equal width
+row = st.columns(6)  # Create a list of 5 columns with equal width
 tile = row[0].container(border=True)  # Use only the first column
 tile.image(LOGO_IMAGE_PATH)  # Place an image in the first column
 
