@@ -50,8 +50,9 @@ def init():
         st.session_state['data'] = None 
 
 def update_session_state(table_id):
-    st.session_state['selected-table'] = table_id
-    st.session_state['data'] = get_dataframe(st.session_state['selected-table'])
+    with st.spinner('Loading ...'):
+        st.session_state['selected-table'] = table_id
+        st.session_state['data'] = get_dataframe(st.session_state['selected-table'])
     st.rerun()
      
 
@@ -185,11 +186,6 @@ def cast_bool_columns(df):
         if df[col].dropna().isin([True, False]).all():
             df[col] = df[col].astype(bool)
     return df
-#LOGO
-row = st.columns(6)  # Create a list of 5 columns with equal width
-tile = row[0].container(border=False)  # Use only the first column
-tile.image(LOGO_IMAGE_PATH)  # Place an image in the first column
-
 
 # Display tables
 init()
@@ -197,6 +193,10 @@ st.session_state["tables_id"] = fetch_all_ids()
 tables_df = st.session_state["tables_id"]
 
 if st.session_state['selected-table']is None:
+    #LOGO
+    row = st.columns(6)  # Create a list of 5 columns with equal width
+    tile = row[0].container(border=False)  # Use only the first column
+    tile.image(LOGO_IMAGE_PATH)  # Place an image in the first column
     #Keboola title
     st.title(":blue[Keboola] Data Editor")
 
@@ -206,9 +206,9 @@ if st.session_state['selected-table']is None:
     st.subheader("Tables")
 
     # Search bar and sorting options
-    search_col, sort_col, but_col = st.columns((6,4,1))
+    search_col, sort_col, but_col = st.columns((60,30,10))
     with search_col:
-        search_query = st.text_input("", placeholder="Search",label_visibility="collapsed")
+        search_query = st.text_input("Search", placeholder="Search",label_visibility="collapsed")
 
     with sort_col:
         sort_option = st.selectbox("By Name", ["By Name", "By Date Created", "By Date Updated"],label_visibility="collapsed")
@@ -239,7 +239,7 @@ if st.session_state['selected-table']is None:
         # row['displayName'], row['table_id'],row['lastImportDate'],row['created']
 else:
     col1,col2,col3,col4 = st.columns(4)
-    with col4:
+    with col1:
         st.button(":gray[Back to Tables]", on_click=resetSetting, type="secondary")
     # Data Editor
     st.title("Data Editor")
