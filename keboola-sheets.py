@@ -49,6 +49,9 @@ def init():
     if 'data' not in st.session_state:
         st.session_state['data'] = None 
 
+    if 'upload-tables' not in st.session_state:
+        st.session_state["upload-tables"] = False
+
 def update_session_state(table_id):
     with st.spinner('Loading ...'):
         st.session_state['selected-table'] = table_id
@@ -118,6 +121,15 @@ def fetch_all_ids():
     ids_list = [{'table_id': table["id"], 'displayName': table["displayName"], 'primaryKey': table["primaryKey"][0] if table["primaryKey"] else "",
                   'lastImportDate': table['lastImportDate'], 'rowsCount': table['rowsCount'], 'created': table['created']} for table in all_tables]
     return pd.DataFrame(ids_list)
+
+# Definujte callback funkci pro tlačítko
+def on_click_uploads():
+    st.session_state["upload-tables"] = True
+
+# Definujte callback funkci pro tlačítko
+def on_click_back():
+    st.session_state["upload-tables"] = False
+
 
 # Function to display a table section
 # table_name, table_id ,updated,created
@@ -192,9 +204,9 @@ init()
 st.session_state["tables_id"] = fetch_all_ids()
 tables_df = st.session_state["tables_id"]
 
-if st.session_state['selected-table']is None:
+if st.session_state['selected-table'] is None and (st.session_state['upload-tables'] is None or st.session_state['upload-tables'] == False):
     #LOGO
-    row = st.columns(6)  # Create a list of 5 columns with equal width
+    row = st.columns(10)  # Create a list of 5 columns with equal width
     tile = row[0].container(border=False)  # Use only the first column
     tile.image(LOGO_IMAGE_PATH)  # Place an image in the first column
     #Keboola title
@@ -203,12 +215,17 @@ if st.session_state['selected-table']is None:
     st.info('Select the table you want to edit. If the data is not up-to-data, click on the Reload Data button.', icon="ℹ️")
 
     # Title of the Streamlit app
-    st.subheader("Tables")
+    c1, c2 = st.columns((90,10))
+    with c1:
+        st.subheader("Tables")
+    with c2:
+        if st.button(":open_file_folder: Upload New Data", on_click=on_click_uploads, use_container_width = True):
+            pass
 
     # Search bar and sorting options
-    search_col, sort_col, but_col = st.columns((60,30,10))
+    search_col, sort_col, but_col1 = st.columns((60,30,10))
     with search_col:
-        search_query = st.text_input("Search", placeholder="Search",label_visibility="collapsed")
+        search_query = st.text_input("Search for table", placeholder="Search",label_visibility="collapsed")
 
     with sort_col:
         sort_option = st.selectbox("By Name", ["By Name", "By Date Created", "By Date Updated"],label_visibility="collapsed")
@@ -228,8 +245,8 @@ if st.session_state['selected-table']is None:
         filtered_df = filtered_df.sort_values(by="lastImportDate", ascending=True)
 
 
-    with but_col:
-        if st.button("Reload Data", key="reload-tables"):
+    with but_col1:
+        if st.button("Reload Data", key="reload-tables", use_container_width = True):
             st.session_state["tables_id"] = tables_df = fetch_all_ids()
             st.toast('Tables List Reloaded!', icon = "✅")
 
@@ -237,10 +254,11 @@ if st.session_state['selected-table']is None:
     for index, row in filtered_df.iterrows():
         display_table_section(row)
         # row['displayName'], row['table_id'],row['lastImportDate'],row['created']
-else:
-    col1,col2,col3,col4 = st.columns(4)
+
+elif st.session_state['selected-table']is not None and (st.session_state['upload-tables'] is None or st.session_state['upload-tables'] == False):
+    col1,col2,col3,col4= st.columns(4)
     with col1:
-        st.button(":gray[Back to Tables]", on_click=resetSetting, type="secondary")
+        st.button(":gray[:arrow_left: Back to Tables]", on_click=resetSetting, type="secondary")
     # Data Editor
     st.title("Data Editor")
     # Info
@@ -259,7 +277,7 @@ else:
        
 
     # Expander with info about table
-    with st.expander("Table"):
+    with st.expander("Table Info"):
          # Filter the DataFrame to find the row for the selected table_id
         selected_row = st.session_state["tables_id"][st.session_state["tables_id"]['table_id'] == st.session_state['selected-table']]
 
@@ -288,4 +306,70 @@ else:
         st.success('Data Updated!', icon = "🎉")
 
     ChangeButtonColour('Save Data', '#FFFFFF', '#1EC71E','#1EC71E')
+elif st.session_state['upload-tables']:
+    if st.button(":gray[:arrow_left: Go back]", on_click=on_click_back):
+        pass
+    st.title('Import Data into :blue[Keboola Storage]')
+    # List and display available buckets
+    buckets = client.buckets.list()
+    bucket_names = ["Create new bucket"]  # Add option to create a new bucket at the beginning
+    bucket_names.extend([bucket['id'] for bucket in buckets])
+    
+    selected_bucket = st.selectbox('Choose a bucket or create a new one', bucket_names, placeholder="Choose an option")
+
+    if selected_bucket == "Create new bucket":
+        new_bucket_name = st.text_input("Enter new bucket name")
+        create_bucket_button = st.button("Create Bucket")
+
+        if create_bucket_button and new_bucket_name:
+            # Check if the bucket name is original
+            new_bucket_id = f"out.c-{new_bucket_name}"
+            if new_bucket_id in bucket_names:
+                st.error(f"Error: Bucket name '{new_bucket_id}' already exists.")
+            else:
+                try:
+                    # Create new bucket
+                    client.buckets.create(new_bucket_id, new_bucket_name)
+                    st.success(f"Bucket '{new_bucket_id}' created successfully!")
+                    bucket_names.append(new_bucket_id)  # Update the list of buckets
+                    selected_bucket = new_bucket_id  # Set the newly created bucket as selected
+                except Exception as e:
+                    st.error(f"Error creating bucket: You don't have permission to create a new bucket. Please select one from the available options.")
+
+    elif selected_bucket and selected_bucket != "Choose an option":
+        # File uploader
+        uploaded_file = st.file_uploader("Upload a file", type=['csv', 'xlsx'])
+
+        # Input for table name
+        table_name = st.text_input("Enter table name")
+
+        # Upload button
+        if st.button('Upload'):
+            if selected_bucket and uploaded_file and table_name:
+                # Check if the table name already exists in the selected bucket
+                existing_tables = client.buckets.list_tables(bucket_id=selected_bucket)
+                existing_table_names = [table['name'] for table in existing_tables]
+
+                if table_name in existing_table_names:
+                    st.error(f"Error: Table name '{table_name}' already exists in the selected bucket.")
+                else:
+                    # Save the uploaded file to a temporary path
+                    temp_file_path = f"/tmp/{uploaded_file.name}"
+                    with open(temp_file_path, "wb") as f:
+                        f.write(uploaded_file.getbuffer())
+
+                    # Create the table in the selected bucket
+                    try:
+                        client.tables.create(
+                            name=table_name,
+                            bucket_id=selected_bucket,
+                            file_path=temp_file_path,
+                            primary_key=[]
+                        )
+                        st.success('File uploaded and table created successfully!')
+                    except Exception as e:
+                        st.error(f"Error: {str(e)}")
+            else:
+                st.error('Error: Please select a bucket, upload a file, and enter a table name.')
+
 display_footer_section()
