@@ -299,7 +299,7 @@ elif st.session_state['selected-table']is not None and (st.session_state['upload
             st.session_state["data"] = edited_data
             concatenated_df = pd.concat([kbc_data, edited_data])
             sym_diff_df = concatenated_df.drop_duplicates(keep=False)
-            write_to_log(sym_diff_df, st.session_state["selected-table"], True)
+            # write_to_log(sym_diff_df, st.session_state["selected-table"], True)
             write_to_keboola(edited_data, st.session_state["selected-table"],f'updated_data.csv.gz', False)
         st.success('Data Updated!', icon = "🎉")
 
