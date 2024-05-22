@@ -1,5 +1,7 @@
+[theme]
 primaryColor="#1F8FFF"
 backgroundColor="#FFFFFF"
 secondaryBackgroundColor="#EDF0F5"
 textColor="#222529"
 font="Source Sans Pro"
+base="light"
