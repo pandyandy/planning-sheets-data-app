@@ -6,6 +6,7 @@ import os
 import csv
 import pandas as pd
 import datetime
+import time
 
 # Setting page config
 st.set_page_config(page_title="Keboola Sheets App", page_icon=":robot:", layout="wide")
@@ -179,8 +180,6 @@ def resetSetting():
     st.session_state['selected-table'] = None
     st.session_state['data'] = None 
 
-
-
 def write_to_log(data, table, incremental):
     now = datetime.datetime.now()
     log_df = pd.DataFrame({
@@ -202,7 +201,6 @@ def cast_bool_columns(df):
 # Display tables
 init()
 st.session_state["tables_id"] = fetch_all_ids()
-tables_df = st.session_state["tables_id"]
 
 if st.session_state['selected-table'] is None and (st.session_state['upload-tables'] is None or st.session_state['upload-tables'] == False):
     #LOGO
@@ -224,17 +222,23 @@ if st.session_state['selected-table'] is None and (st.session_state['upload-tabl
 
     # Search bar and sorting options
     search_col, sort_col, but_col1 = st.columns((60,30,10))
+
+    with but_col1:
+        if st.button("Reload Data", key="reload-tables", use_container_width = True, type="secondary"):
+            st.session_state["tables_id"] = fetch_all_ids()
+            st.toast('Tables List Reloaded!', icon = "✅")
+
     with search_col:
-        search_query = st.text_input("Search for table", placeholder="Search",label_visibility="collapsed")
+        search_query = st.text_input("Search for table", placeholder="Table Search",label_visibility="collapsed")
 
     with sort_col:
-        sort_option = st.selectbox("By Name", ["By Name", "By Date Created", "By Date Updated"],label_visibility="collapsed")
+        sort_option = st.selectbox("Sort By Name", ["Sort By Name", "Sort By Date Created", "Sort By Date Updated"],label_visibility="collapsed")
 
     # Filtrace dat podle vyhledávacího dotazu
     if search_query:
-        filtered_df = tables_df[tables_df.apply(lambda row: search_query.lower() in str(row).lower(), axis=1)]
+        filtered_df = st.session_state["tables_id"][st.session_state["tables_id"].apply(lambda row: search_query.lower() in str(row).lower(), axis=1)]
     else:
-        filtered_df = tables_df
+        filtered_df = st.session_state["tables_id"]
     
     # Třídění dat
     if sort_option == "By Name":
@@ -243,12 +247,6 @@ if st.session_state['selected-table'] is None and (st.session_state['upload-tabl
         filtered_df = filtered_df.sort_values(by="created", ascending=True)
     elif sort_option == "By Date Updated":
         filtered_df = filtered_df.sort_values(by="lastImportDate", ascending=True)
-
-
-    with but_col1:
-        if st.button("Reload Data", key="reload-tables", use_container_width = True):
-            st.session_state["tables_id"] = tables_df = fetch_all_ids()
-            st.toast('Tables List Reloaded!', icon = "✅")
 
     # Looping through each row of the Tables ID
     for index, row in filtered_df.iterrows():
@@ -265,7 +263,7 @@ elif st.session_state['selected-table']is not None and (st.session_state['upload
     st.info('After clicking the Sava Data button, the data will be sent to Keboola Storage using a full load. If the data is not up-to-date, click on the Reload Data button. ', icon="ℹ️")
     # Reload Button
     if st.button("Reload Data", key="reload-table",use_container_width=True ):
-            st.session_state["tables_id"] = tables_df = fetch_all_ids()
+            st.session_state["tables_id"] = fetch_all_ids()
             st.toast('Tables List Reloaded!', icon = "✅")
 
     #Select Box
@@ -366,10 +364,17 @@ elif st.session_state['upload-tables']:
                             file_path=temp_file_path,
                             primary_key=[]
                         )
-                        st.success('File uploaded and table created successfully!')
+                        with st.spinner('Uploading...'):
+                            st.session_state["tables_id"] = fetch_all_ids()
+                            st.session_state['upload-tables'] = False
+                            st.session_state['selected-table'] = selected_bucket+"."+table_name
+                            time.sleep(5)
+                        st.success('File uploaded and table created successfully!', icon = "🎉")
+                        st.rerun()
+
                     except Exception as e:
                         st.error(f"Error: {str(e)}")
             else:
-                st.error('Error: Please select a bucket, upload a file, and enter a table name.')
+                st.error('Error: Please select a bucket, upload a file, and enter a table name. Please check if you have permission to create a new bucket and table.')
 
 display_footer_section()
