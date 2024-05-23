@@ -14,7 +14,7 @@ st.set_page_config(page_title="Keboola Sheets App", page_icon=":robot:", layout=
 # Constants
 token = st.secrets["kbc_storage_token"]
 url = st.secrets["kbc_url"]
-LOGO_IMAGE_PATH = os.path.abspath("./app/static/keboola.png")
+LOGO_IMAGE_PATH = os.path.abspath("./app/static/logo_blue.png")
 
 # Initialize Client
 client = Client(url, token)
