@@ -9,7 +9,7 @@ import datetime
 import time
 
 # Setting page config
-st.set_page_config(page_title="Keboola Sheets App", page_icon=":robot:", layout="wide")
+st.set_page_config(page_title="Keboola Sheets App", page_icon=":robot:", layout="centered")
 
 # Constants
 token = st.secrets["kbc_storage_token"]
@@ -90,7 +90,7 @@ def display_table_card(row):
             },
          "title": {
                 "font-size": "24px",
-                "color": "#0068C9",
+                "color": "#1E8FFF",
                 "padding-left":"5%",
                 "align-self": "flex-start",}
         
@@ -208,12 +208,18 @@ if st.session_state['selected-table'] is None and (st.session_state['upload-tabl
     tile = row[0].container(border=False)  # Use only the first column
     tile.image(LOGO_IMAGE_PATH)  # Place an image in the first column
     #Keboola title
-    st.title(":blue[Keboola] Data Editor")
-
-    st.info('Select the table you want to edit. If the data is not up-to-data, click on the Reload Data button.', icon="ℹ️")
+    #st.title(":blue[Keboola] Data Editor")
+    st.markdown(
+    """
+    <h1 style="font-size:32px;"><span style="color:#1F8FFF;">Keboola</span> Data Editor</h1>
+    """,
+    unsafe_allow_html=True
+)
+    
+    st.info('Select the table you want to edit. If the data is not up-to-date, click on the Reload Data button.', icon="ℹ️")
 
     # Title of the Streamlit app
-    c1, c2 = st.columns((90,10))
+    c1, c2 = st.columns((60,20))
     with c1:
         st.subheader("Tables")
     with c2:
@@ -221,7 +227,7 @@ if st.session_state['selected-table'] is None and (st.session_state['upload-tabl
             pass
 
     # Search bar and sorting options
-    search_col, sort_col, but_col1 = st.columns((60,30,10))
+    search_col, sort_col, but_col1 = st.columns((35,25,20))
 
     with but_col1:
         if st.button("Reload Data", key="reload-tables", use_container_width = True, type="secondary"):

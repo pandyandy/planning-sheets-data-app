@@ -1,4 +1,4 @@
 streamlit
 kbcstorage
-streamlit_card
+streamlit-card
 extra-streamlit-components
